@@ -15,7 +15,8 @@ Pathfinder::Pathfinder() {
 	}
 
 bool Pathfinder::importMaze(string file_name)
-	{
+	{	
+		int countOnes = 0;
 		int counter = 0;
 		cout << "importMaze from "<<file_name<<endl;
 		ifstream file (file_name.c_str());
@@ -33,14 +34,21 @@ bool Pathfinder::importMaze(string file_name)
 					if(value != 0 && value != 1) {
 						return false;
 					}
+					if (value == 1) {
+						countOnes++;
+					}
 					cout << "["<<row<<"]["<<col<<"]["<<height<<"]= "<<value<<endl;
 					maze_grid[row][col][height] = value;
 					counter++;
 					}
 				}
+				getline(file, line);
 			}
 		}
 		if(counter != 125) {
+			return false;
+		}
+		if(countOnes == 125) {
 			return false;
 		}
 		if (maze_grid[0][0][0] != 1 || maze_grid[4][4][4] != 1) {
@@ -79,9 +87,9 @@ string Pathfinder::toString() const
 	    return false;      // Cell is out of bounds.
 	  else if (grid[r][c][h] != BACKGROUND)
 	    return false;      // Cell is on barrier or dead end.
-	  else if (r == ROW_SIZE - 1 && c == COL_SIZE - 1) {
+	  else if (r == ROW_SIZE - 1 && c == COL_SIZE - 1 && h == HEIGHT_SIZE-1) {
 	    grid[r][c][h] = PATH;         // Cell is on path
-	    solution.push_back("("+to_string(r)+","+to_string(c)+")");
+	    solution.push_back("("+to_string(r)+","+to_string(c)+","+to_string(h)+")");
 	    return true;               // and is maze exit.
 	  }
 	  else { 
@@ -96,7 +104,7 @@ string Pathfinder::toString() const
 		|| find_maze_path(grid, r, c, h+1) //forward
 		|| find_maze_path(grid, r, c, h-1) //Back
 		) {
-	      solution.push_back("("+to_string(r)+","+to_string(c)+")");
+	      solution.push_back("("+to_string(r)+","+to_string(c)+","+to_string(h)+")");
 	      return true;
 	    }
 	    else {
